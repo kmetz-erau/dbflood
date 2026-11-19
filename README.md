@@ -101,3 +101,7 @@ See [BUILD_VERIFICATION.md](docs/BUILD_VERIFICATION.md) for the latest build fix
 ## Weather radar layer
 
 Toggle **NOAA weather radar** under Map layers to display NEXRAD-derived composite radar reflectivity over the Daytona area. Radar data originate from NOAA/NWS and are delivered as map tiles by Iowa Environmental Mesonet (`ridge::USCOMP-N0Q`). The radar layer is **off by default**; the source may be delayed or unavailable, and reflectivity is not a measured rainfall accumulation or a flood-depth observation. The map's attribution credits both the NOAA/NWS source and the tile distributor. Radar tiles are requested by the browser; availability could not be independently checked in this build environment.
+
+## Radar tile compatibility
+
+The IEM radar tiles require `scheme: 'tms'` in the MapLibre raster source. See [radar troubleshooting](docs/RADAR_TROUBLESHOOTING.md).
