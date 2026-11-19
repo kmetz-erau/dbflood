@@ -98,10 +98,9 @@ See [BUILD_VERIFICATION.md](docs/BUILD_VERIFICATION.md) for the latest build fix
 - Click an orange NWS alert polygon on the map to view its event, area, headline, description, instructions and official link. Alerts are also expandable in the sidebar for alerts without polygon geometry.
 - NOAA observations are water levels relative to MLLW, **not** a measure of flooding at a street or property.
 
-## Weather radar layer
+## NOAA radar (v8)
 
-Toggle **NOAA weather radar** under Map layers to display NEXRAD-derived composite radar reflectivity over the Daytona area. Radar data originate from NOAA/NWS and are delivered as map tiles by Iowa Environmental Mesonet (`ridge::USCOMP-N0Q`). The radar layer is **off by default**; the source may be delayed or unavailable, and reflectivity is not a measured rainfall accumulation or a flood-depth observation. The map's attribution credits both the NOAA/NWS source and the tile distributor. Radar tiles are requested by the browser; availability could not be independently checked in this build environment.
+Radar uses NOAA nowCOAST MRMS base-reflectivity WMS 1.1.1 instead of the IEM TMS endpoint. The MapLibre raster source requests Web Mercator tile bounding boxes with `BBOX={bbox-epsg-3857}`. Observed reflectivity is not a rainfall forecast. Browser access, service availability, CORS, and the precise upstream layer name must be validated after deployment; live NOAA access was not available in the build environment.
 
-## Radar tile compatibility
-
-The IEM radar tiles require `scheme: 'tms'` in the MapLibre raster source. See [radar troubleshooting](docs/RADAR_TROUBLESHOOTING.md).
+### v8 verification marker
+The sidebar must display `NOAA nowCOAST · WMS radar mosaic`. The source and layer IDs are `noaa-nowcoast-radar` and `noaa-nowcoast-radar-layer`. No Iowa Mesonet tile URL is used in the application.

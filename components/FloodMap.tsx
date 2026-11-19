@@ -5,6 +5,12 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { DAYTONA } from '@/lib/config';
 import type { Alert, DashboardData } from '@/lib/types';
 import type { Feature, FeatureCollection, Geometry } from 'geojson';
+// NOAA nowCOAST WMS; no Iowa Mesonet / TMS dependency.
+const RADAR_WMS_URL = 'https://nowcoast.noaa.gov/geoserver/observations/weather_radar/ows' +
+  '?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap' +
+  '&LAYERS=conus_base_reflectivity_mosaic&STYLES=' +
+  '&FORMAT=image%2Fpng&TRANSPARENT=TRUE&SRS=EPSG%3A3857' +
+  '&WIDTH=256&HEIGHT=256&BBOX={bbox-epsg-3857}';
 export type Layers = { gauges: boolean; alerts: boolean; rain: boolean; radar: boolean };
 export default function FloodMap({ data, layers }: { data: DashboardData | null; layers: Layers }) {
   const root = useRef<HTMLDivElement>(null); const mapRef = useRef<MapLibreMap | null>(null);
@@ -16,28 +22,29 @@ export default function FloodMap({ data, layers }: { data: DashboardData | null;
     mapRef.current = map;
     return () => { map.remove(); mapRef.current = null; };
   }, []);
-  // NOAA/NWS NEXRAD-derived radar mosaic, distributed by Iowa Environmental Mesonet.
+  // NOAA nowCOAST MRMS radar mosaic served as WMS (Web Mercator BBOX).
   // This is observed radar reflectivity, not a rainfall total or flood forecast.
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
     const applyRadar = () => {
       if (!map.isStyleLoaded()) return;
-      if (!map.getSource('nexrad-radar')) {
-        map.addSource('nexrad-radar', {
+      if (!map.getSource('noaa-nowcoast-radar')) {
+        map.addSource('noaa-nowcoast-radar', {
           type: 'raster',
-          tiles: ['https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/ridge::USCOMP-N0Q/{z}/{x}/{y}.png'],
+          // WMS 1.1.1; MapLibre replaces {bbox-epsg-3857} for each tile.
+          tiles: [RADAR_WMS_URL],
           tileSize: 256,
-          attribution: 'Radar: NOAA/NWS NEXRAD via Iowa Environmental Mesonet',
+          attribution: 'Radar imagery: NOAA nowCOAST (NWS/MRMS)',
         });
       }
-      if (!map.getLayer('nexrad-radar-layer')) {
+      if (!map.getLayer('noaa-nowcoast-radar-layer')) {
         map.addLayer({
-          id: 'nexrad-radar-layer', type: 'raster', source: 'nexrad-radar',
+          id: 'noaa-nowcoast-radar-layer', type: 'raster', source: 'noaa-nowcoast-radar',
           paint: { 'raster-opacity': 0.65, 'raster-fade-duration': 0 },
         });
       }
-      map.setLayoutProperty('nexrad-radar-layer', 'visibility', layers.radar ? 'visible' : 'none');
+      map.setLayoutProperty('noaa-nowcoast-radar-layer', 'visibility', layers.radar ? 'visible' : 'none');
     };
     if (map.isStyleLoaded()) applyRadar();
     else map.on('load', applyRadar);
