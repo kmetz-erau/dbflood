@@ -16,3 +16,16 @@ describe('NWS alert normalization', () => {
     expect(mergeAlerts([[f('minor', 'Minor'), f('extreme', 'Extreme')]]).map(a => a.id)).toEqual(['extreme', 'minor']);
   });
 });
+
+describe('alert geometry and fallback fields', () => {
+  it('retains polygon geometry for map display', () => {
+    const polygon = { type: 'Polygon' as const, coordinates: [[[-81, 29], [-80, 29], [-81, 30], [-81, 29]]] };
+    const alerts = mergeAlerts([[{ id: 'polygon-1', properties: { event: 'Flood Warning' }, geometry: polygon }]]);
+    expect(alerts[0].polygon).toEqual(polygon);
+  });
+  it('ignores null geometry and non-flood events', () => {
+    const alerts = mergeAlerts([[{ id: 'no-geometry', properties: { event: 'Coastal Flood Advisory' }, geometry: null }, { id: 'heat', properties: { event: 'Heat Advisory' } }]]);
+    expect(alerts).toHaveLength(1);
+    expect(alerts[0].polygon).toBeUndefined();
+  });
+});
