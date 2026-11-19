@@ -90,3 +90,14 @@ The NWS query set is best-effort, not a guaranteed complete countywide warning s
 ## Verification notes
 
 See [BUILD_VERIFICATION.md](docs/BUILD_VERIFICATION.md) for the latest build fixes, test commands, and limitations.
+
+## v4 map updates
+
+- Five configured NOAA CO-OPS stations (regional stations are included for coastal context, not local flood depth). Stations without valid latest observations do not appear.
+- Rainfall forecasts are displayed in inches, converted from the upstream millimeter values by dividing by 25.4.
+- Click an orange NWS alert polygon on the map to view its event, area, headline, description, instructions and official link. Alerts are also expandable in the sidebar for alerts without polygon geometry.
+- NOAA observations are water levels relative to MLLW, **not** a measure of flooding at a street or property.
+
+## Weather radar layer
+
+Toggle **NOAA weather radar** under Map layers to display NEXRAD-derived composite radar reflectivity over the Daytona area. Radar data originate from NOAA/NWS and are delivered as map tiles by Iowa Environmental Mesonet (`ridge::USCOMP-N0Q`). The radar layer is **off by default**; the source may be delayed or unavailable, and reflectivity is not a measured rainfall accumulation or a flood-depth observation. The map's attribution credits both the NOAA/NWS source and the tile distributor. Radar tiles are requested by the browser; availability could not be independently checked in this build environment.

@@ -1,10 +1,13 @@
 export const DAYTONA = { lat: 29.2108, lon: -81.0228, zoom: 10.5 } as const;
 export const STATIONS = [
-  { id: '8721120', name: 'Daytona Beach (NOAA)', lat: 29.227, lon: -81.009 },
-  { id: '8721604', name: 'Ponce de Leon Inlet (NOAA)', lat: 29.08, lon: -80.928 },
+  { id: '8721120', name: 'Daytona Beach', lat: 29.227, lon: -81.009 },
+  { id: '8721604', name: 'Trident Pier, Port Canaveral', lat: 28.4158, lon: -80.5931 },
+  { id: '8720218', name: 'Mayport (Jacksonville)', lat: 30.3982, lon: -81.4279 },
+  { id: '8720030', name: 'Fernandina Beach', lat: 30.6714, lon: -81.4658 },
+  { id: '8722670', name: 'Lake Worth Pier', lat: 26.6128, lon: -80.0342 },
 ] as const;
-// Station coordinates are map approximations, not authoritative NOAA station metadata.
-// A station is rendered only after NOAA returns a valid observation.
+// Regional reference stations may lie outside Volusia County. NOAA metadata
+// overrides approximate coordinates, and stations without observations are omitted.
 export const FORECAST_POINTS = [
   { name: 'Daytona Beach', lat: 29.2108, lon: -81.0228 },
   { name: 'Ormond Beach', lat: 29.2858, lon: -81.0559 },
