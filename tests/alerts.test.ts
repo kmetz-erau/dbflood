@@ -29,3 +29,14 @@ describe('alert geometry and fallback fields', () => {
     expect(alerts[0].polygon).toBeUndefined();
   });
 });
+
+describe('geometry validation', () => {
+  it('accepts valid MultiPolygon geometry', () => {
+    const geometry = { type: 'MultiPolygon' as const, coordinates: [[[[-81, 29], [-80, 29], [-81, 30], [-81, 29]]]] };
+    expect(mergeAlerts([[{ id: 'multi', properties: { event: 'Flood Warning' }, geometry }]])[0].polygon).toEqual(geometry);
+  });
+  it('rejects invalid coordinate nesting', () => {
+    const geometry = { type: 'Polygon', coordinates: [1, 2, 3] };
+    expect(mergeAlerts([[{ id: 'bad', properties: { event: 'Flood Warning' }, geometry }]])[0].polygon).toBeUndefined();
+  });
+});

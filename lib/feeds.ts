@@ -38,13 +38,13 @@ export async function getAlerts(): Promise<Feed<Alert>> {
     ];
     const responses = await Promise.allSettled(endpoints.map(url => json<NwsResponse>(url)));
     const successful = responses.filter((r): r is PromiseFulfilledResult<NwsResponse> => r.status === 'fulfilled');
-    if (!successful.length) throw new Error('All NWS alert endpoints failed');
+    if (successful.length !== responses.length) throw new Error('One or more NWS alert endpoints failed; alert coverage is incomplete');
     return mergeAlerts(successful.map(r => Array.isArray(r.value.features) ? r.value.features : []));
   });
 }
 export async function getGauges(): Promise<Feed<Gauge>> {
   return feed('NOAA CO-OPS', async () => {
-    const results = await Promise.allSettled(STATIONS.map(async station => {
+    const results = await Promise.allSettled(STATIONS.map(async (station): Promise<Gauge | null> => {
       const query = new URLSearchParams({ product: 'water_level', application: 'DaytonaFloodWatch', date: 'latest', datum: 'MLLW', station: station.id, time_zone: 'gmt', units: 'english', format: 'json' });
       const response = await json<NoaaResponse>(`https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?${query}`);
       const obs = response.data?.[0];

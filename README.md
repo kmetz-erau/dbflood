@@ -85,3 +85,8 @@ The Vercel lint failure caused by explicit `any` in `lib/alerts.ts` and `lib/fee
 Before pushing to production, run `npm install`, `npm run lint`, `npm run typecheck`, `npm test`, and `npm run build`. In this authoring environment dependency installation timed out, so these commands **have not been verified to pass**. CI will run them after upload.
 
 The NWS query set is best-effort, not a guaranteed complete countywide warning service; individual query failures can lead to incomplete results. Always consult official warnings.
+
+
+## Verification notes
+
+See [BUILD_VERIFICATION.md](docs/BUILD_VERIFICATION.md) for the latest build fixes, test commands, and limitations.

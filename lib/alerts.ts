@@ -20,12 +20,26 @@ export function isFloodRelevant(event: string): boolean {
   return /flood|storm surge|coastal|hurricane|tropical storm|high surf|rip current/i.test(event);
 }
 
+function isPosition(value: unknown): value is number[] {
+  return Array.isArray(value) && value.length >= 2 && value.every(n => typeof n === 'number' && Number.isFinite(n));
+}
+
+function isRing(value: unknown): value is number[][] {
+  return Array.isArray(value) && value.length >= 4 && value.every(isPosition);
+}
+
+function isPolygonCoordinates(value: unknown): value is number[][][] {
+  return Array.isArray(value) && value.length > 0 && value.every(isRing);
+}
+
 function isPolygon(value: unknown): value is NonNullable<Alert['polygon']> {
   if (typeof value !== 'object' || value === null) return false;
   const geometry = value as { type?: unknown; coordinates?: unknown };
-  return geometry.type === 'Polygon'
-    ? Array.isArray(geometry.coordinates) && geometry.coordinates.every((ring: unknown) => Array.isArray(ring) && ring.every((point: unknown) => Array.isArray(point) && point.length >= 2 && point.every((n: unknown) => typeof n === 'number' && Number.isFinite(n))))
-    : geometry.type === 'MultiPolygon' && Array.isArray(geometry.coordinates) && geometry.coordinates.every((poly: unknown) => Array.isArray(poly) && poly.every((ring: unknown) => Array.isArray(ring) && ring.every((point: unknown) => Array.isArray(point) && point.length >= 2 && point.every((n: unknown) => typeof n === 'number' && Number.isFinite(n)))));
+  if (geometry.type === 'Polygon') return isPolygonCoordinates(geometry.coordinates);
+  if (geometry.type === 'MultiPolygon') {
+    return Array.isArray(geometry.coordinates) && geometry.coordinates.length > 0 && geometry.coordinates.every(isPolygonCoordinates);
+  }
+  return false;
 }
 
 export function normalizeAlert(feature: NwsAlertFeature): Alert {
